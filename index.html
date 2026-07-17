@@ -1,20 +1,39 @@
 ---
 layout: default
 ---
-<div class="home-intro">
-  <p>{{ site.description }}</p>
-</div>
-
-<ul class="post-list">
-  {% for post in site.posts %}
-  <li class="post-list-item">
-    <time class="post-list-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time>
-    <a class="post-list-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
-    {% if post.excerpt %}<p class="post-list-excerpt">{{ post.excerpt | strip_html | truncatewords: 28 }}</p>{% endif %}
-  </li>
-  {% endfor %}
-</ul>
-
-{% if site.posts.size == 0 %}
-  <p class="empty">No posts yet. Your first one is on the way.</p>
-{% endif %}
+{% assign total = site.posts | size %}
+{% assign next_no = total | plus: 1 %}
+{% assign next_no_padded = next_no | prepend: '00' | slice: -3, 3 %}
+<h1 class="visually-hidden">{{ site.title }} — index</h1>
+<section class="log-page">
+  <div class="log-next">
+    <p class="log-next-meta">
+      <span class="entry-no">Nº {{ next_no_padded }}</span>
+      <span class="entry-date">unwritten</span>
+    </p>
+    <p class="log-next-note">The next entry. Everything below is appended in order.</p>
+  </div>
+  <ol class="log">
+    {% for post in site.posts %}
+    {% assign post_year = post.date | date: "%Y" %}
+    {% if post_year != shown_year %}
+    <li class="year-mark" aria-hidden="true">{{ post_year }}</li>
+    {% assign shown_year = post_year %}
+    {% endif %}
+    {% assign entry_no = total | minus: forloop.index | plus: 1 %}
+    {% assign entry_no_padded = entry_no | prepend: '00' | slice: -3, 3 %}
+    <li class="entry">
+      <div class="entry-meta">
+        <span class="entry-no">Nº {{ entry_no_padded }}</span>
+        <time class="entry-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+      </div>
+      <h2 class="entry-title"><a class="entry-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+      <p class="entry-excerpt">{{ post.excerpt | strip_html | normalize_whitespace | truncatewords: 28 }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+  {% if total > 0 %}
+  {% assign first_post = site.posts | last %}
+  <p class="log-origin"><span class="record-mark" aria-hidden="true"></span>log opened {{ first_post.date | date: "%Y-%m-%d" }}</p>
+  {% endif %}
+</section>

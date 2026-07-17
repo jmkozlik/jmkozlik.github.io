@@ -1,204 +1,696 @@
 /* ============================================================
-   Notes — a minimal, typographic blog theme.
-   One file, no build step. Tweak the variables below to taste.
+   OPEN LEDGER — an append-only log
+   Ground: cool bond white (never cream). Red is the paper's
+   ruling; blue is the ink. Besley for record headings,
+   Literata for long reading, IBM Plex Mono for the apparatus.
    ============================================================ */
 
 :root {
-  --ink:        #1b1a17;
-  --ink-soft:   #55524c;
-  --ink-faint:  #8a857c;
-  --bg:         #faf8f4;
-  --bg-inset:   #f0ede6;
-  --rule:       #e3ded4;
-  --accent:     #9a3b1f;   /* restrained terracotta for links */
-  --accent-dim: #c65f3d;   /* lighter accent for hover */
+  color-scheme: light dark;
 
-  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Charter, Georgia, Cambria, "Times New Roman", serif;
-  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono:  ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* palette — light (“the ledger by day”) */
+  --paper: #F7F9FA;        /* bond white */
+  --paper-inset: #EDF1F3;  /* recessed panels: code, inline code */
+  --ink: #1E2833;          /* iron-gall blue-black */
+  --ink-muted: #566574;    /* faded ink */
+  --ink-blue: #2451C4;     /* record blue — everything written/interactive */
+  --rule-red: #C13A28;     /* margin red — the paper's own ruling */
+  --rule-red-soft: rgba(193, 58, 40, 0.5);
+  --ink-2: #6C4DB8;        /* second ink (violet) — code strings only */
+  --feint: #DCE3E8;        /* feint rule for quiet borders */
 
-  --measure: 40rem;
-  --step:    1.25;
+  --font-display: "Besley", "Iowan Old Style", Georgia, serif;
+  --font-body: "Literata", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --col: 40rem;       /* one reading column, everywhere (~68ch at post size) */
+  --rule-pad: 1.5rem; /* gap between the margin rule and the text */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --ink:        #e9e5dd;
-    --ink-soft:   #b3ada2;
-    --ink-faint:  #7d786f;
-    --bg:         #16161a;
-    --bg-inset:   #202027;
-    --rule:       #2e2e36;
-    --accent:     #e08a5f;
-    --accent-dim: #f0a074;
+    /* palette — dark (“the ledger at night”) */
+    --paper: #151B26;
+    --paper-inset: #1C2432;
+    --ink: #E4E9EE;
+    --ink-muted: #93A0AE;
+    --ink-blue: #8FADF7;
+    --rule-red: #D2604C;
+    --rule-red-soft: rgba(210, 96, 76, 0.5);
+    --ink-2: #B7A3EE;
+    --feint: #2A3442;
   }
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+/* ---------- base ---------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--serif);
-  font-size: 1.19rem;
-  line-height: 1.7;
-  font-feature-settings: "kern", "liga", "onum";
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* ---- Layout rails ---------------------------------------- */
-.site-header,
+::selection {
+  background: var(--ink-blue);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink-blue);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* one shared column for header, content, footer */
+.site-head,
 .content,
-.site-footer { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: 1.5rem; }
+.site-foot {
+  width: min(100% - 2.5rem, var(--col));
+  margin-inline: auto;
+}
 
-.content { flex: 1 0 auto; padding-top: 1rem; padding-bottom: 4rem; }
+/* the record mark — a filled square means “recorded” */
+.record-mark {
+  display: inline-block;
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--rule-red);
+}
 
-/* ---- Header ---------------------------------------------- */
-.site-header {
+/* the halmos — end of entry */
+.halmos {
+  display: inline-block;
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  background: var(--ink);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 10;
+  transform: translateY(-250%);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* ---------- header ---------- */
+
+.site-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
-  padding-top: 2.5rem;
-  padding-bottom: 1.5rem;
-  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  padding-top: 2.25rem;
+  margin-bottom: 3.25rem;
 }
-.site-title {
-  font-family: var(--sans);
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
   font-weight: 600;
-  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.wordmark:hover { color: var(--ink-blue); }
+
+.site-nav {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.site-nav a {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.site-nav a:hover { color: var(--ink-blue); }
+
+/* ---------- prose (about.md, post bodies) ----------
+   :where() keeps these at element-level specificity so
+   every classed component below overrides them cleanly. */
+
+.content {
+  flex: 1;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+
+:where(.content) h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
+  line-height: 1.15;
   letter-spacing: -0.01em;
-  color: var(--ink);
-  text-decoration: none;
+  margin: 0 0 1.25rem;
 }
-.site-nav { font-family: var(--sans); font-size: 0.95rem; display: flex; gap: 1.25rem; }
-.site-nav a { color: var(--ink-soft); text-decoration: none; }
-.site-nav a:hover { color: var(--accent); }
 
-/* ---- Links ----------------------------------------------- */
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; transition: color .15s ease; }
-a:hover { color: var(--accent-dim); }
-
-/* ---- Headings -------------------------------------------- */
-h1, h2, h3, h4 {
-  font-family: var(--sans);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin: 2.2rem 0 0.7rem;
+:where(.content) h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.25;
+  margin: 2.75rem 0 1rem;
 }
-h1 { font-size: 2.1rem; }
-h2 { font-size: 1.55rem; }
-h3 { font-size: 1.22rem; }
 
-/* ---- Homepage post list ---------------------------------- */
-.home-intro { color: var(--ink-soft); font-style: italic; margin: 0.5rem 0 2.5rem; }
-
-.post-list { list-style: none; margin: 0; padding: 0; }
-.post-list-item { padding: 1.4rem 0; border-top: 1px solid var(--rule); }
-.post-list-item:last-child { border-bottom: 1px solid var(--rule); }
-.post-list-date {
-  display: block;
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-faint);
-  margin-bottom: 0.25rem;
+:where(.content) h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1.3;
+  margin: 2.25rem 0 0.75rem;
 }
-.post-list-link {
-  font-family: var(--sans);
+
+:where(.content) h4 {
+  font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 1.35rem;
-  letter-spacing: -0.015em;
-  color: var(--ink);
-  text-decoration: none;
-}
-.post-list-link:hover { color: var(--accent); }
-.post-list-excerpt { color: var(--ink-soft); margin: 0.35rem 0 0; font-size: 1.05rem; }
-.empty { color: var(--ink-faint); font-style: italic; }
-
-/* ---- Post ------------------------------------------------ */
-.post-header { margin-bottom: 2rem; }
-.post-title { margin: 0 0 0.4rem; font-size: 2.3rem; }
-.post-meta {
-  font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-faint);
-  margin: 0;
+  letter-spacing: 0.1em;
+  margin: 2rem 0 0.6rem;
 }
-.tag { color: var(--accent); }
 
-.post-body > * { margin-block: 0 1.15rem; }
-.post-body img { max-width: 100%; height: auto; border-radius: 4px; }
-.post-body blockquote {
-  margin: 1.6rem 0;
-  padding-left: 1.2rem;
-  border-left: 3px solid var(--accent);
-  color: var(--ink-soft);
+:where(.content) p { margin: 0 0 1.35em; }
+
+:where(.content) a {
+  color: var(--ink-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+:where(.content) a:hover { text-decoration-thickness: 2px; }
+
+:where(.content) ul,
+:where(.content) ol {
+  margin: 0 0 1.35em;
+  padding-left: 1.5rem;
+}
+
+:where(.content) li { margin: 0.4em 0; }
+
+:where(.content) li::marker { color: var(--ink-muted); }
+
+:where(.content) blockquote {
+  margin: 1.75rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 2px solid var(--feint);
+  color: var(--ink-muted);
   font-style: italic;
 }
-.post-body hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
 
-/* ---- Code ------------------------------------------------ */
-code, pre { font-family: var(--mono); font-size: 0.88em; }
-:not(pre) > code { background: var(--bg-inset); padding: 0.12em 0.38em; border-radius: 4px; }
-pre {
-  background: var(--bg-inset);
-  padding: 1rem 1.15rem;
-  border-radius: 6px;
+:where(.content) blockquote p:last-child { margin-bottom: 0; }
+
+/* a section break is authored content, so it's set in ink (a halmos),
+   not in the paper's structural red */
+:where(.content) hr {
+  border: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--ink);
+  margin: 3rem auto;
+}
+
+:where(.content) code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+:where(.content) :not(pre) > code {
+  background: var(--paper-inset);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+}
+
+:where(.content) pre {
+  background: var(--paper-inset);
+  border: 1px solid var(--feint);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
   overflow-x: auto;
-  line-height: 1.5;
-  border: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  margin: 1.75rem 0;
 }
-pre code { background: none; padding: 0; }
 
-/* ---- Tables ---------------------------------------------- */
-table { border-collapse: collapse; width: 100%; font-size: 0.95rem; margin: 1.4rem 0; }
-th, td { border-bottom: 1px solid var(--rule); padding: 0.55rem 0.7rem; text-align: left; }
-th { font-family: var(--sans); font-size: 0.85rem; }
+:where(.content) pre code {
+  font-size: 1em;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
 
-/* ---- Post nav (prev/next) -------------------------------- */
+:where(.content) figure { margin: 1.75rem 0; }
+:where(.content) figure pre { margin: 0; }
+
+:where(.content) table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  font-size: 0.9375rem;
+}
+
+:where(.content) th {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+:where(.content) th,
+:where(.content) td {
+  padding: 0.5rem 1.25rem 0.5rem 0;
+  border-bottom: 1px solid var(--feint);
+}
+
+:where(.content) img { border-radius: 6px; }
+
+:where(.content) .footnotes {
+  margin-top: 3rem;
+  border-top: 1px solid var(--feint);
+  padding-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-muted);
+}
+
+/* ---------- index: the log ---------- */
+
+/* the unwritten next entry — dashed ruling, hollow square */
+.log-next {
+  position: relative;
+  border-left: 2px dashed var(--rule-red-soft);
+  padding: 0.25rem 0 2.5rem var(--rule-pad);
+}
+
+.log-next::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 0.55rem;
+  width: 6px;
+  height: 6px;
+  border: 2px solid var(--rule-red);
+  background: var(--paper);
+}
+
+.log-next-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.log-next-meta .entry-no {
+  color: var(--rule-red);
+  font-weight: 500;
+}
+
+.log-next-meta .entry-date { font-style: italic; }
+
+.log-next-note {
+  margin: 0;
+  max-width: 32rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+/* the recorded entries — solid ruling, filled squares */
+.log {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.25rem var(--rule-pad);
+  border-left: 2px solid var(--rule-red);
+}
+
+.log > li + li { margin-top: 2.75rem; }
+.log > li.year-mark { margin-top: 3.5rem; }
+.log > li.year-mark:first-child { margin-top: 0; }
+.log > li.year-mark + li { margin-top: 1.5rem; }
+
+.year-mark {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--rule-red);
+}
+
+.entry { position: relative; }
+
+.entry::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--rule-pad) - 4px);
+  top: 0.45rem;
+  width: 6px;
+  height: 6px;
+  background: var(--rule-red);
+}
+
+/* stretched link: the anchor wraps only the title text (clean semantics),
+   its ::after covers the whole entry so the full card stays clickable */
+.entry-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.entry-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  margin: 0 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+
+.entry-no {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.entry-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.375rem;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  transition: color 0.15s ease;
+}
+
+.entry-link:hover,
+.entry-link:focus-visible {
+  color: var(--ink-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.entry-excerpt {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--ink-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.log-origin {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 2.5rem 0 0 calc(var(--rule-pad) + 2px);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
+/* ---------- post: one entry, read in full ---------- */
+
+.post-head { margin-bottom: 2.5rem; }
+
+.record-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 1em;
+  margin: 0 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+}
+
+.record-line .record-mark { align-self: center; }
+
+.record-no {
+  color: var(--ink);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.record-field::before {
+  content: "·";
+  margin-right: 0.9em;
+}
+
+.post-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.post-body > :first-child { margin-top: 0; }
+
+.post-end { margin-top: 3.5rem; }
+
+.entry-end {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+
 .post-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 3.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--rule);
-  font-family: var(--sans);
-  font-size: 0.95rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--feint);
+  padding-top: 1.75rem;
 }
-.post-nav a { text-decoration: none; color: var(--ink-soft); max-width: 45%; }
-.post-nav a:hover { color: var(--accent); }
-.post-nav .next { margin-left: auto; text-align: right; }
 
-/* ---- Footer ---------------------------------------------- */
-.site-footer {
-  flex-shrink: 0;
+.post-nav-link {
   display: flex;
-  justify-content: space-between;
-  padding-top: 1.5rem;
-  padding-bottom: 2.5rem;
-  border-top: 1px solid var(--rule);
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  color: var(--ink-faint);
+  flex-direction: column;
+  gap: 0.4rem;
+  color: inherit;
+  text-decoration: none;
 }
-.site-footer a { color: var(--ink-faint); text-decoration: none; }
-.site-footer a:hover { color: var(--accent); }
 
-/* ---- Small screens --------------------------------------- */
-@media (max-width: 34rem) {
-  body { font-size: 1.1rem; }
-  .post-title { font-size: 1.85rem; }
-  .site-header { padding-top: 1.75rem; }
+.post-nav-link.next { text-align: right; }
+
+.post-nav-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
+}
+
+.post-nav-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  transition: color 0.15s ease;
+}
+
+.post-nav-link:hover .post-nav-title { color: var(--ink-blue); }
+
+/* ---------- footer ---------- */
+
+.site-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-top: 5.5rem;
+  padding: 1.5rem 0 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+}
+
+.site-foot p {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+}
+
+.site-foot a {
+  color: var(--ink-muted);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+
+.site-foot a:hover { color: var(--ink-blue); }
+
+/* ---------- syntax micro-theme (rouge) ----------
+   comments fade, keywords write in record blue, strings in the
+   second ink — code is all *written*, so red (the paper's own
+   ruling) never appears inside it. */
+
+.highlight .c, .highlight .c1, .highlight .cm,
+.highlight .cs, .highlight .cp {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .kp,
+.highlight .kr, .highlight .kt, .highlight .kc, .highlight .ow {
+  color: var(--ink-blue);
+}
+
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb,
+.highlight .sc, .highlight .sd, .highlight .sh, .highlight .si,
+.highlight .sx, .highlight .sr, .highlight .ss {
+  color: var(--ink-2);
+}
+
+.highlight .mi, .highlight .mf, .highlight .mh,
+.highlight .mo, .highlight .il {
+  color: var(--ink-blue);
+}
+
+.highlight .nf, .highlight .nc, .highlight .nd { font-weight: 600; }
+
+/* ---------- wider screens ---------- */
+
+@media (min-width: 40rem) {
+  .site-head {
+    padding-top: 3rem;
+    margin-bottom: 4rem;
+  }
+
+  .post-body {
+    font-size: 1.125rem;
+    line-height: 1.75;
+  }
+
+  .entry-title { font-size: 1.5rem; }
+
+  .post-nav { grid-template-columns: 1fr 1fr; }
+  .post-nav-link.prev { grid-column: 1; }
+  .post-nav-link.next { grid-column: 2; }
+}
+
+/* hang the apparatus in the true margin, left of the ruling */
+@media (min-width: 68rem) {
+  .entry-meta {
+    position: absolute;
+    top: 0.45rem;
+    right: calc(100% + var(--rule-pad) + 2px + 0.9rem);
+    width: 9rem;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4em;
+    margin: 0;
+    text-align: right;
+  }
+
+  .log-next-meta {
+    position: absolute;
+    top: 0.3rem;
+    right: calc(100% + 2px + 0.9rem);
+    width: 9rem;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.4em;
+    margin: 0;
+    text-align: right;
+  }
+
+  .log-next { padding-bottom: 3rem; }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }
