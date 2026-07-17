@@ -1,0 +1,20 @@
+---
+layout: default
+---
+<div class="home-intro">
+  <p>{{ site.description }}</p>
+</div>
+
+<ul class="post-list">
+  {% for post in site.posts %}
+  <li class="post-list-item">
+    <time class="post-list-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time>
+    <a class="post-list-link" href="{{ post.url | relative_url }}">{{ post.title }}</a>
+    {% if post.excerpt %}<p class="post-list-excerpt">{{ post.excerpt | strip_html | truncatewords: 28 }}</p>{% endif %}
+  </li>
+  {% endfor %}
+</ul>
+
+{% if site.posts.size == 0 %}
+  <p class="empty">No posts yet. Your first one is on the way.</p>
+{% endif %}

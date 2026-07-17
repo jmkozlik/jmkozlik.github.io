@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────
+#  Site settings — edit these two lines to rename your blog.
+# ─────────────────────────────────────────────────────────────
+title: "Notes"
+description: "Writing by jmkozlik."
+author: "jmkozlik"
+
+# Your live URL. Leave as-is unless you add a custom domain.
+url: "https://jmkozlik.github.io"
+baseurl: ""
+
+# ─────────────────────────────────────────────────────────────
+#  Build settings — you shouldn't need to touch these.
+# ─────────────────────────────────────────────────────────────
+permalink: /:year/:month/:day/:title/
+timezone: America/New_York
+
+# Nicer post excerpts on the homepage
+excerpt_separator: "<!--more-->"
+
+# Show newest posts first (default), and expose a friendly date format
+markdown: kramdown
+kramdown:
+  input: GFM            # GitHub-flavored markdown (fenced code, tables, etc.)
+  syntax_highlighter: rouge
+
+exclude:
+  - README.md
+  - new-post.sh
+  - Gemfile
+  - Gemfile.lock
+  - vendor

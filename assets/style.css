@@ -1,0 +1,204 @@
+/* ============================================================
+   Notes — a minimal, typographic blog theme.
+   One file, no build step. Tweak the variables below to taste.
+   ============================================================ */
+
+:root {
+  --ink:        #1b1a17;
+  --ink-soft:   #55524c;
+  --ink-faint:  #8a857c;
+  --bg:         #faf8f4;
+  --bg-inset:   #f0ede6;
+  --rule:       #e3ded4;
+  --accent:     #9a3b1f;   /* restrained terracotta for links */
+  --accent-dim: #c65f3d;   /* lighter accent for hover */
+
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Charter, Georgia, Cambria, "Times New Roman", serif;
+  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:  ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --measure: 40rem;
+  --step:    1.25;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:        #e9e5dd;
+    --ink-soft:   #b3ada2;
+    --ink-faint:  #7d786f;
+    --bg:         #16161a;
+    --bg-inset:   #202027;
+    --rule:       #2e2e36;
+    --accent:     #e08a5f;
+    --accent-dim: #f0a074;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.19rem;
+  line-height: 1.7;
+  font-feature-settings: "kern", "liga", "onum";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ---- Layout rails ---------------------------------------- */
+.site-header,
+.content,
+.site-footer { width: 100%; max-width: var(--measure); margin-inline: auto; padding-inline: 1.5rem; }
+
+.content { flex: 1 0 auto; padding-top: 1rem; padding-bottom: 4rem; }
+
+/* ---- Header ---------------------------------------------- */
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 2.5rem;
+  padding-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.site-title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-nav { font-family: var(--sans); font-size: 0.95rem; display: flex; gap: 1.25rem; }
+.site-nav a { color: var(--ink-soft); text-decoration: none; }
+.site-nav a:hover { color: var(--accent); }
+
+/* ---- Links ----------------------------------------------- */
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; transition: color .15s ease; }
+a:hover { color: var(--accent-dim); }
+
+/* ---- Headings -------------------------------------------- */
+h1, h2, h3, h4 {
+  font-family: var(--sans);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 2.2rem 0 0.7rem;
+}
+h1 { font-size: 2.1rem; }
+h2 { font-size: 1.55rem; }
+h3 { font-size: 1.22rem; }
+
+/* ---- Homepage post list ---------------------------------- */
+.home-intro { color: var(--ink-soft); font-style: italic; margin: 0.5rem 0 2.5rem; }
+
+.post-list { list-style: none; margin: 0; padding: 0; }
+.post-list-item { padding: 1.4rem 0; border-top: 1px solid var(--rule); }
+.post-list-item:last-child { border-bottom: 1px solid var(--rule); }
+.post-list-date {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  margin-bottom: 0.25rem;
+}
+.post-list-link {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.35rem;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.post-list-link:hover { color: var(--accent); }
+.post-list-excerpt { color: var(--ink-soft); margin: 0.35rem 0 0; font-size: 1.05rem; }
+.empty { color: var(--ink-faint); font-style: italic; }
+
+/* ---- Post ------------------------------------------------ */
+.post-header { margin-bottom: 2rem; }
+.post-title { margin: 0 0 0.4rem; font-size: 2.3rem; }
+.post-meta {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  margin: 0;
+}
+.tag { color: var(--accent); }
+
+.post-body > * { margin-block: 0 1.15rem; }
+.post-body img { max-width: 100%; height: auto; border-radius: 4px; }
+.post-body blockquote {
+  margin: 1.6rem 0;
+  padding-left: 1.2rem;
+  border-left: 3px solid var(--accent);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.post-body hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+
+/* ---- Code ------------------------------------------------ */
+code, pre { font-family: var(--mono); font-size: 0.88em; }
+:not(pre) > code { background: var(--bg-inset); padding: 0.12em 0.38em; border-radius: 4px; }
+pre {
+  background: var(--bg-inset);
+  padding: 1rem 1.15rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  line-height: 1.5;
+  border: 1px solid var(--rule);
+}
+pre code { background: none; padding: 0; }
+
+/* ---- Tables ---------------------------------------------- */
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; margin: 1.4rem 0; }
+th, td { border-bottom: 1px solid var(--rule); padding: 0.55rem 0.7rem; text-align: left; }
+th { font-family: var(--sans); font-size: 0.85rem; }
+
+/* ---- Post nav (prev/next) -------------------------------- */
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+.post-nav a { text-decoration: none; color: var(--ink-soft); max-width: 45%; }
+.post-nav a:hover { color: var(--accent); }
+.post-nav .next { margin-left: auto; text-align: right; }
+
+/* ---- Footer ---------------------------------------------- */
+.site-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.site-footer a { color: var(--ink-faint); text-decoration: none; }
+.site-footer a:hover { color: var(--accent); }
+
+/* ---- Small screens --------------------------------------- */
+@media (max-width: 34rem) {
+  body { font-size: 1.1rem; }
+  .post-title { font-size: 1.85rem; }
+  .site-header { padding-top: 1.75rem; }
+}
