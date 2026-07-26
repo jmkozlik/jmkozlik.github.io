@@ -1,52 +1,88 @@
 # jmkozlik.github.io
 
-My personal blog. Lives at **https://jmkozlik.github.io**.
+Jonathan Kozlik's personal site, built with Jekyll and deployed through GitHub
+Pages at **https://jmkozlik.github.io/**.
 
-## How to write a post (the whole workflow)
+## Routes
 
-1. Create a file in `_posts/` named `YYYY-MM-DD-a-short-slug.md`
-   — or just run `./new-post.sh "My Title"` and it makes one for you.
-2. Write in Markdown under the front-matter block.
-3. Publish:
-   ```bash
-   git add -A
-   git commit -m "post: my title"
-   git push
-   ```
-4. GitHub rebuilds the site automatically. It's live in under a minute at
-   your URL. No servers, no build commands.
+- `/` — introduction, selected work, current investigation, and recent notes
+- `/work/` — experience and longer project descriptions
+- `/writing/` — Jekyll notes archive
+- `/about/` — biography and contact
+- `/feed.xml` — Atom feed
 
-## Renaming the blog
+Resume and OpenReview links render only when their URLs are configured. Both
+are intentionally unset.
 
-Edit the top three lines of `_config.yml` (`title`, `description`, `author`),
-commit, and push.
+## Notes
 
-## Changing the look
-
-All styling is in `assets/style.css`. The colors and fonts are CSS variables
-at the very top of that file — change those to restyle the whole site. It's
-built to work in both light and dark mode automatically.
-
-## Previewing locally (optional — you don't need this)
-
-You only need this if you want to see changes before pushing. GitHub builds
-the real site for you regardless.
+Create `_posts/YYYY-MM-DD-a-short-slug.md` manually or run:
 
 ```bash
-bundle install        # first time only
+./new-post.sh "Post title"
+```
+
+Posts support these front matter fields:
+
+```yaml
+---
+layout: post
+title: "Post title"
+date: 2026-07-26 12:00:00 -0400
+summary: "A short description for listings and metadata."
+tags: [agents, evaluation]
+repository: "https://github.com/example/project"
+experiment: "optional experiment identifier"
+---
+```
+
+Markdown, fenced code, figures, tables, footnotes, and normal links are
+handled by kramdown.
+
+## Public content safety
+
+`CONTENT_AUDIT.local.md` is an ignored local evidence ledger. Never force-add,
+commit, publish, or copy it into a public page. The site should contain only
+public-safe claims and links.
+
+Do not add a resume until a revised, fact-checked PDF is ready. When it is:
+
+1. Store it under `assets/files/`.
+2. Set `resume_url` in `_config.yml`.
+3. Add a `/resume/` route only if a separate route is still useful.
+
+Set `openreview_url` only after confirming the exact profile URL.
+
+## Local development
+
+Use Ruby 3 or newer; the macOS system Ruby is too old for current GitHub Pages
+dependencies.
+
+```bash
+bundle install
 bundle exec jekyll serve
-# then open http://localhost:4000
+# http://localhost:4000
 ```
 
-## Layout
+Build and run the repository/output checks with:
+
+```bash
+bundle exec jekyll build
+python3 script/verify_site.py
+```
+
+## Structure
 
 ```
-_config.yml          site title/description + build settings
-index.html           the homepage (lists your posts)
-about.md             the About page
-_posts/              one Markdown file per post
-_layouts/            page templates (default, post)
-assets/style.css     all the styling
-feed.xml             RSS/Atom feed (auto-generated)
-new-post.sh          helper to create a new post file
+_config.yml                 identity, profile links, build settings
+index.html                  homepage
+work.md                     complete work and evidence page
+writing.md                  post archive
+about.md                    biography
+_layouts/                   global and post templates
+_posts/                     Markdown writing
+assets/style.css            complete visual system
+feed.xml                    Atom feed template
+new-post.sh                 post scaffolding helper
+script/verify_site.py       source and generated-output checks
 ```

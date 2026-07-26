@@ -1,39 +1,59 @@
 ---
 layout: default
+description: "Jonathan Kozlik builds AI applications and tools for working with agents."
 ---
-{% assign total = site.posts | size %}
-{% assign next_no = total | plus: 1 %}
-{% assign next_no_padded = next_no | prepend: '00' | slice: -3, 3 %}
-<h1 class="visually-hidden">{{ site.title }} — index</h1>
-<section class="log-page">
-  <div class="log-next">
-    <p class="log-next-meta">
-      <span class="entry-no">Nº {{ next_no_padded }}</span>
-      <span class="entry-date">unwritten</span>
-    </p>
-    <p class="log-next-note">The next entry. Everything below is appended in order.</p>
+
+<section class="introduction">
+  <h1>I build AI applications and tools for working with agents.</h1>
+  <p class="intro">I’m studying computer science and applied mathematics at NJIT. I co-founded TrainSafe and currently work on enterprise AI applications at Southern Company.</p>
+  <p class="intro">Lately, I’ve been interested in a narrower question: how do you tell whether adding agents and execution constraints actually makes a system more reliable?</p>
+  <p class="profile-links">
+    <a href="mailto:{{ site.email }}">{{ site.email }}</a>
+    <span aria-hidden="true">·</span>
+    <a href="{{ site.github_url }}">GitHub</a>
+    <span aria-hidden="true">·</span>
+    <a href="{{ site.linkedin_url }}">LinkedIn</a>
+    {% if site.resume_url != empty %}<span aria-hidden="true">·</span> <a href="{{ site.resume_url | relative_url }}">Resume</a>{% endif %}
+    {% if site.openreview_url != empty %}<span aria-hidden="true">·</span> <a href="{{ site.openreview_url }}">OpenReview</a>{% endif %}
+  </p>
+</section>
+
+<section class="notebook-section" aria-labelledby="selected-work-title">
+  <h2 id="selected-work-title">Selected work</h2>
+  <div class="project-list">
+    <article class="project">
+      <h3>Constitutional Agent Stack</h3>
+      <p>A set of execution hooks, isolated workspaces, and review mechanisms for coding agents. I built it to explore what can be enforced by the environment instead of left entirely to prompts.</p>
+      <p><a href="https://github.com/jmkozlik/constitutional-agent-stack">Code <span aria-hidden="true">→</span></a></p>
+    </article>
+    <article class="project">
+      <h3>Macrograd</h3>
+      <p>A matrix automatic-differentiation engine I wrote from scratch to better understand reverse-mode differentiation and gradient flow.</p>
+      <p><a href="https://github.com/jmkozlik/macrograd">Code <span aria-hidden="true">→</span></a></p>
+    </article>
+    <article class="project">
+      <h3>MyCelium</h3>
+      <p>A federated-learning prototype built during HackMIT. I worked on the Modal compute workers and model aggregation path.</p>
+      <p><a href="https://github.com/jmkozlik/mycelium_1.0">Code <span aria-hidden="true">→</span></a></p>
+    </article>
   </div>
-  <ol class="log">
-    {% for post in site.posts %}
-    {% assign post_year = post.date | date: "%Y" %}
-    {% if post_year != shown_year %}
-    <li class="year-mark" aria-hidden="true">{{ post_year }}</li>
-    {% assign shown_year = post_year %}
-    {% endif %}
-    {% assign entry_no = total | minus: forloop.index | plus: 1 %}
-    {% assign entry_no_padded = entry_no | prepend: '00' | slice: -3, 3 %}
-    <li class="entry">
-      <div class="entry-meta">
-        <span class="entry-no">Nº {{ entry_no_padded }}</span>
-        <time class="entry-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
-      </div>
-      <h2 class="entry-title"><a class="entry-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-      <p class="entry-excerpt">{{ post.excerpt | strip_html | normalize_whitespace | truncatewords: 28 }}</p>
+</section>
+
+<section class="notebook-section current" aria-labelledby="current-title">
+  <h2 id="current-title">Now — July 2026</h2>
+  <p>I’m working toward a controlled comparison of prompt-only agent rules and mechanically enforced execution constraints.</p>
+</section>
+
+{% if site.posts.size > 0 %}
+<section class="notebook-section" aria-labelledby="recent-notes-title">
+  <h2 id="recent-notes-title">Recent notes</h2>
+  <ol class="note-list">
+    {% for post in site.posts limit: 3 %}
+    <li>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
     </li>
     {% endfor %}
   </ol>
-  {% if total > 0 %}
-  {% assign first_post = site.posts | last %}
-  <p class="log-origin"><span class="record-mark" aria-hidden="true"></span>log opened {{ first_post.date | date: "%Y-%m-%d" }}</p>
-  {% endif %}
 </section>
+{% endif %}

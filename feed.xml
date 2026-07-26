@@ -2,21 +2,27 @@
 layout: null
 permalink: /feed.xml
 ---
+{%- assign latest_post = site.posts.first -%}
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>{{ site.title | xml_escape }}</title>
   <subtitle>{{ site.description | xml_escape }}</subtitle>
   <link href="{{ '/feed.xml' | absolute_url }}" rel="self"/>
   <link href="{{ '/' | absolute_url }}"/>
-  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <updated>{% if latest_post %}{{ latest_post.date | date_to_xmlschema }}{% else %}{{ site.time | date_to_xmlschema }}{% endif %}</updated>
   <id>{{ '/' | absolute_url | xml_escape }}</id>
-  <author><name>{{ site.author | xml_escape }}</name></author>
+  <author>
+    <name>{{ site.author | xml_escape }}</name>
+    <email>{{ site.email | xml_escape }}</email>
+  </author>
   {% for post in site.posts limit:20 %}
   <entry>
     <title>{{ post.title | xml_escape }}</title>
     <link href="{{ post.url | absolute_url }}"/>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
+    <published>{{ post.date | date_to_xmlschema }}</published>
     <id>{{ post.url | absolute_url | xml_escape }}</id>
+    <summary type="html">{% if post.summary and post.summary != empty %}{{ post.summary | xml_escape }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | xml_escape }}{% endif %}</summary>
     <content type="html">{{ post.content | xml_escape }}</content>
   </entry>
   {% endfor %}

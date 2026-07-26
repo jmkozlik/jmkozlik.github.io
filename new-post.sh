@@ -9,6 +9,7 @@ if [ $# -lt 1 ]; then
 fi
 
 title="$*"
+yaml_title="${title//\"/\\\"}"
 date_prefix="$(date +%Y-%m-%d)"
 datetime="$(date '+%Y-%m-%d %H:%M:%S %z')"
 
@@ -27,12 +28,14 @@ fi
 cat > "$file" <<EOF
 ---
 layout: post
-title: "${title}"
+title: "${yaml_title}"
 date: ${datetime}
+summary: ""
 tags: []
+repository: ""
+experiment: ""
 ---
 
-Write here.
 EOF
 
 echo "created $file"

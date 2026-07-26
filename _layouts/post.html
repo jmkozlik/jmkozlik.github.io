@@ -1,39 +1,39 @@
 ---
 layout: default
 ---
-{% assign total = site.posts | size %}
-{% assign entry_index = 1 %}
-{% for p in site.posts %}{% if p.url == page.url %}{% assign entry_index = forloop.index %}{% endif %}{% endfor %}
-{% assign entry_no = total | minus: entry_index | plus: 1 %}
-{% assign entry_no_padded = entry_no | prepend: '00' | slice: -3, 3 %}
 <article class="post">
-  <header class="post-head">
-    <p class="record-line">
-      <span class="record-mark" aria-hidden="true"></span>
-      <span class="record-no">Entry Nº&nbsp;{{ entry_no_padded }}</span>
-      <span class="record-field">appended <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time></span>
-      <span class="record-field">{{ content | strip_html | number_of_words }} words</span>
-      {% if page.tags.size > 0 %}<span class="record-field">{{ page.tags | join: ", " }}</span>{% endif %}
+  <header class="post-header">
+    <h1>{{ page.title }}</h1>
+    {% if page.summary and page.summary != empty %}<p class="post-summary">{{ page.summary }}</p>{% endif %}
+    <p class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+      <span aria-hidden="true">·</span>
+      <span>{{ content | strip_html | number_of_words }} words</span>
+      {% if page.tags.size > 0 %}
+      <span aria-hidden="true">·</span>
+      <span>{{ page.tags | join: ", " }}</span>
+      {% endif %}
     </p>
-    <h1 class="post-title">{{ page.title }}</h1>
+    {% if page.repository and page.repository != empty %}
+    <p class="post-resource"><a href="{{ page.repository }}">View repository</a></p>
+    {% endif %}
   </header>
   <div class="post-body">
     {{ content }}
   </div>
-  <footer class="post-end">
-    <p class="entry-end"><span class="halmos" aria-hidden="true"></span>end of entry Nº&nbsp;{{ entry_no_padded }}</p>
+  <footer class="post-footer">
     {% if page.previous or page.next %}
-    <nav class="post-nav" aria-label="Adjacent entries">
+    <nav class="post-nav" aria-label="Adjacent writing">
       {% if page.previous %}
-      <a class="post-nav-link prev" href="{{ page.previous.url | relative_url }}">
-        <span class="post-nav-label">← older entry</span>
-        <span class="post-nav-title">{{ page.previous.title }}</span>
+      <a class="post-nav-link" href="{{ page.previous.url | relative_url }}">
+        <span class="post-nav-label">Older</span>
+        <span>{{ page.previous.title }}</span>
       </a>
       {% endif %}
       {% if page.next %}
-      <a class="post-nav-link next" href="{{ page.next.url | relative_url }}">
-        <span class="post-nav-label">newer entry →</span>
-        <span class="post-nav-title">{{ page.next.title }}</span>
+      <a class="post-nav-link post-nav-next" href="{{ page.next.url | relative_url }}">
+        <span class="post-nav-label">Newer</span>
+        <span>{{ page.next.title }}</span>
       </a>
       {% endif %}
     </nav>
