@@ -7,7 +7,7 @@ email: "kozlikj18@gmail.com"
 github_username: "jmkozlik"
 github_url: "https://github.com/jmkozlik"
 linkedin_url: "https://www.linkedin.com/in/jkozlik/"
-resume_url: ""
+resume_url: "/resume.pdf"
 openreview_url: ""
 
 permalink: /:year/:month/:day/:title/
